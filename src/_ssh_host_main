@@ -1,3 +1,22 @@
-_ssh_host_main() {
+source "${SSH_HOST_PLUGIN_DIR}/utils/host.zsh"
 
+_ssh_host_main() {
+    local hosts=$(_ssh_host_print_hosts_list)
+
+    selected_host=$(echo "$hosts" | \
+        fzf --height=100% \
+            --layout=reverse \
+            --border \
+            --ansi \
+            --prompt="Type to filter: " \
+            --info="inline-right: [Enter] Connect • [Ctrl-N] Add New • [Esc] Quit " \
+            --preview-window=right:40% \
+            --bind="esc:abort" )
+
+    if [[ -n "$selected_host" ]]; then
+        local host_alias
+        host_alias=$(echo "$selected_host" | awk '{print $1}')
+        ssh "$host_alias"
+        return $?
+    fi
 }
