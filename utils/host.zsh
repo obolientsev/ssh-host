@@ -24,6 +24,22 @@ _ssh_host_print_host_row() {
            "$host_alias" "$user" "$hostname" "$port"
 }
 
+# Displays formatted SSH host configuration details
+# _ssh_host_print_host_config "server1" "hostname example.com\nuser ubuntu\nport 22"
+# => "Host alias: server1"
+# => "--------------------------------"
+# => "  hostname:                    example.com"
+# => "  user:                        ubuntu"
+# => "  port:                        22"
+_ssh_host_print_host_config() {
+    local host_alias="$1" config="$2"
+
+    printf "${SSH_HOST_COLOR_NC}Host alias:${SSH_HOST_COLOR_BLUE} %s\n" "$host_alias"
+    printf "${SSH_HOST_COLOR_GRAY}%*s\n" "$(tput cols)" '' | tr ' ' '-'
+    awk -v c1="$SSH_HOST_COLOR_CYAN" -v nc="$SSH_HOST_COLOR_NC" \
+        '{printf "  %s%-32s%s %s\n", nc, $1 ":", c1, $2}' <<< "$config"
+}
+
 # Extracts all host aliases from SSH config with Include support
 # _ssh_host_aliases_list
 # => "server_alias_1"

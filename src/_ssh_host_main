@@ -10,6 +10,7 @@ _ssh_host_main() {
             --ansi \
             --prompt="Type to filter: " \
             --info="inline-right: [Enter] Connect • [Ctrl-N] Add New • [Esc] Quit " \
+            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview_host {1}" \
             --preview-window=right:40% \
             --bind="esc:abort" )
 
