@@ -1,0 +1,36 @@
+SSH_HOST_PLUGIN_DIR="${0:A:h:h}"
+source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
+
+_ssh_host_add() {
+    local host_alias host_name user port key_type
+    
+    host_alias=$(_ssh_host_fzf_input \
+        "Enter unique host alias name: " \
+        "" )
+
+    host_name=$(_ssh_host_fzf_input \
+        "Enter the server hostname or IP address: " \
+        "" )
+
+    user=$(_ssh_host_fzf_input \
+        "Enter the SSH username: " \
+        "" )
+
+    port=$(_ssh_host_fzf_input \
+        "Select port or type custom port: " \
+        "22\n2222\n2200\n8022\n22022" )
+
+    key_type=$(_ssh_host_fzf_input \
+        "Choose SSH key type: " \
+        "ed25519 - recommended NIST\nrsa - legacy rsa-4096" )
+
+    confirm_result=$(_ssh_host_fzf_input \
+        "Confirm: " \
+        "Yes - Create this configuration\nNo - Cancel" )
+
+    [[ "$confirm_result" == *"Yes"* ]] || { echo "Configuration cancelled"; return 1; }
+    echo "Adding configuration ..."
+    echo "'${host_alias}' '${host_name}' '${user}' '${port}' '${key_type}'"
+}
+
+[[ $# -gt 0 ]] && _ssh_host_add "$@"
