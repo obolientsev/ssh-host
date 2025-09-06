@@ -8,7 +8,6 @@ _ssh_host_fzf_base() {
         --border \
         --ansi \
         --bind="esc:abort" \
-        --print-query \
         "$@"
 }
 
@@ -25,6 +24,7 @@ _ssh_host_fzf_input() {
         result=$(echo -e "$options" | \
             _ssh_host_fzf_base  --prompt="$prompt" \
                                 --header="" \
+                                --print-query \
                                 --height=12 )
 
         [[ $? -eq 130 ]] && return 1

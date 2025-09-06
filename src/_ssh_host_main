@@ -1,18 +1,15 @@
 source "${SSH_HOST_PLUGIN_DIR}/utils/host.zsh"
+source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
 
 _ssh_host_main() {
     local hosts=$(_ssh_host_print_hosts_list)
 
     selected_host=$(echo "$hosts" | \
-        fzf --height=100% \
-            --layout=reverse \
-            --border \
-            --ansi \
-            --prompt="Type to filter: " \
+        _ssh_host_fzf_base --prompt="Type to filter: " \
             --info="inline-right: [Enter] Connect • [Ctrl-N] Add New • [Esc] Quit " \
             --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview_host {1}" \
-            --preview-window=right:40% \
-            --bind="esc:abort" )
+            --bind="esc:abort" \
+            --preview-window=right:40% )
 
     if [[ -n "$selected_host" ]]; then
         local host_alias
