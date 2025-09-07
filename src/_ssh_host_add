@@ -1,36 +1,43 @@
 SSH_HOST_PLUGIN_DIR="${0:A:h:h}"
 source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
+source "${SSH_HOST_PLUGIN_DIR}/utils/validation.zsh"
 
 _ssh_host_add() {
-    local host_alias host_name user port key_type
+    local host_alias hostname user port key_type
     
     host_alias=$(_ssh_host_fzf_input \
         "Enter unique host alias name: " \
-        "" )
+        "" \
+        "_ssh_host_validate_alias"  )
 
-    host_name=$(_ssh_host_fzf_input \
+    hostname=$(_ssh_host_fzf_input \
         "Enter the server hostname or IP address: " \
-        "" )
+        "" \
+        "_ssh_host_validate_hostname"  )
 
     user=$(_ssh_host_fzf_input \
         "Enter the SSH username: " \
-        "" )
+        "" \
+        "_ssh_host_validate_username"  )
 
     port=$(_ssh_host_fzf_input \
         "Select port or type custom port: " \
-        "22\n2222\n2200\n8022\n22022" )
+        "22\n2222\n2200\n8022\n22022" \
+        "_ssh_host_validate_port"  )
 
     key_type=$(_ssh_host_fzf_input \
         "Choose SSH key type: " \
-        "ed25519 - recommended NIST\nrsa - legacy rsa-4096" )
+        "ed25519 - recommended NIST\nrsa - legacy rsa-4096" \
+        "_ssh_host_validate_key_type"  )
 
     confirm_result=$(_ssh_host_fzf_input \
         "Confirm: " \
-        "Yes - Create this configuration\nNo - Cancel" )
+        "Yes - Create this configuration\nNo - Cancel" \
+        ""  )
 
     [[ "$confirm_result" == *"Yes"* ]] || { echo "Configuration cancelled"; return 1; }
     echo "Adding configuration ..."
-    echo "'${host_alias}' '${host_name}' '${user}' '${port}' '${key_type}'"
+    echo "'${host_alias}' '${hostname}' '${user}' '${port}' '${key_type}'"
 }
 
 [[ $# -gt 0 ]] && _ssh_host_add "$@"
