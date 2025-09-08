@@ -11,22 +11,23 @@ _ssh_host_fzf_base() {
         "$@"
 }
 
-# Interactive input using fzf with predefined options and validation
-# _ssh_host_fzf_input "Enter port: " "22\n2222\n8080" "_validate_port"
+# Interactive input using fzf with options, validation, preview
+# _ssh_host_fzf_input "Enter port: " "22\n2222\n8080" "_validate_port" "'server1' 'host' 'user' '' ''"
 # => "22" (user selected or typed valid value)
 # => Shows validation errors in header and re-prompts until valid
+# => Preview window displays current form state
 # => Returns 1 if user cancels with Esc
 _ssh_host_fzf_input() {
-    local prompt="$1" options="$2" validator="$3"
+    local validator="$1" options="$2"
+    shift 2
     local result current_error=""
 
     while true; do
 
-        result=$(echo -e "$options" | \
-            _ssh_host_fzf_base  --prompt="$prompt" \
-                                --header="$current_error" \
-                                --print-query \
-                                --height=12 )
+        result=$(echo -e "$options" | _ssh_host_fzf_base  --height=12 \
+                                                          --header="$current_error" \
+                                                          --print-query \
+                                                          "$@")
 
         [[ $? -eq 130 ]] && return 1
 

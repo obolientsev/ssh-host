@@ -4,7 +4,7 @@ SSH_HOST_PLUGIN_DIR="${0:A:h:h}"
 source "${SSH_HOST_PLUGIN_DIR}/ssh-host.plugin.conf"
 source "${SSH_HOST_PLUGIN_DIR}/utils/host.zsh"
 
-_ssh_host_preview_entry() {
+_ssh_host_preview_host() {
     local host_alias="$1"
     [[ -z "$host_alias" ]] && return
     
@@ -12,4 +12,4 @@ _ssh_host_preview_entry() {
     _ssh_host_print_host_config "$host_alias" "$config"
 }
 
-[[ $# -gt 0 ]] && _ssh_host_preview_entry "$@"
+[[ $# -gt 0 ]] && _ssh_host_preview_host "$@"
