@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 SSH_HOST_PLUGIN_DIR="${0:A:h:h}"
 source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
 source "${SSH_HOST_PLUGIN_DIR}/utils/validation.zsh"

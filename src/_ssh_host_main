@@ -4,12 +4,15 @@ source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
 _ssh_host_main() {
     local hosts=$(_ssh_host_print_hosts_list)
 
+    [[ -z "$hosts" ]] && { "${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_add" < /dev/tty > /dev/tty; return; }
+
     selected_host=$(echo "$hosts" | \
         _ssh_host_fzf_base --prompt="Type to filter: " \
             --info="inline-right: [Enter] Connect • [Ctrl-N] Add New • [Esc] Quit " \
             --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview_host {1}" \
             --bind="esc:abort" \
-            --preview-window=right:40% )
+            --bind="ctrl-n:execute(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_add add < /dev/tty > /dev/tty)+abort" \
+            --preview-window=right:40%)
 
     if [[ -n "$selected_host" ]]; then
         local host_alias
