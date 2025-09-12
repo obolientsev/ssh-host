@@ -1,8 +1,12 @@
 #!/usr/bin/env zsh
 
 SSH_HOST_PLUGIN_DIR="${0:A:h:h}"
+source "${SSH_HOST_PLUGIN_DIR}/ssh-host.plugin.conf"
+source "${SSH_HOST_PLUGIN_DIR}/utils/system.zsh"
+source "${SSH_HOST_PLUGIN_DIR}/utils/host.zsh"
 source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
 source "${SSH_HOST_PLUGIN_DIR}/utils/validation.zsh"
+source "${SSH_HOST_PLUGIN_DIR}/utils/key.zsh"
 
 _ssh_host_add() {
     local host_alias hostname user port key_type
@@ -41,6 +45,8 @@ _ssh_host_add() {
     [[ "$confirm_result" == *"Yes"* ]] || { echo "Configuration cancelled"; return 1; }
     echo "Adding configuration ..."
     echo "'${host_alias}' '${hostname}' '${user}' '${port}' '${key_type}'"
+
+    key_file=$(_ssh_host_generate_key "$host_alias" "$key_type")
 }
 
 [[ $# -gt 0 ]] && _ssh_host_add "$@"
