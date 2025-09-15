@@ -75,6 +75,8 @@ _ssh_host_aliases_list() {
 # _ssh_host_parse_config_lines "Host|Include" < ~/.ssh/config
 # => "Host server1 server2"
 # _ssh_host_parse_config_lines "hostname|user" <<< "$ssh_output"
+# => "hostname example.com"
+# => "user ubuntu"
 _ssh_host_parse_config_lines() {
     local fields="$1"
 
@@ -98,4 +100,33 @@ _ssh_host_config_by_alias() {
     [[ -z "$config" ]] && return 1
 
     _ssh_host_parse_config_lines "$fields" <<< "$config"
+}
+
+# Adds SSH host configuration to config file
+# _ssh_host_add_to_config "server1" "example.com" "ubuntu" "22" "path/to/key"
+# => Creates backup before modification
+# => Appends Host block to SSH config file
+_ssh_host_add_to_config() {
+    local host_alias="$1" hostname="$2" user="$3" port="$4" identity_file="$5"
+    local config_file="$SSH_HOST_CONFIG_FILE"
+
+    _ssh_host_validate_alias "$host_alias" || return 1
+    _ssh_host_validate_hostname "$hostname" || return 1
+    _ssh_host_validate_username "$user" || return 1
+    _ssh_host_validate_port "$port" || return 1
+
+    _ssh_host_backup_file "$config_file" "$SSH_HOST_BACKUPS_DIR"
+
+    cat >> "$config_file" << EOF
+
+Host $host_alias
+    HostName $hostname
+    User $user
+    Port $port
+EOF
+
+    [[ -n "$identity_file" ]] && cat >> "$config_file" << EOF
+    IdentityFile $identity_file
+    IdentitiesOnly yes
+EOF
 }

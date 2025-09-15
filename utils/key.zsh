@@ -31,7 +31,7 @@ _ssh_host_generate_key() {
     chmod 600 "$key_file" || { echo "Failed to set permissions on private key"; return 1; }
     chmod 644 "${key_file}.pub" || { echo "Failed to set permissions on public key"; return 1; }
 
-    echo "$key_file" >&2
+    echo "$key_file"
 }
 
 

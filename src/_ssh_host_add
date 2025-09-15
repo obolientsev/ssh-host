@@ -47,6 +47,7 @@ _ssh_host_add() {
     echo "'${host_alias}' '${hostname}' '${user}' '${port}' '${key_type}'"
 
     key_file=$(_ssh_host_generate_key "$host_alias" "$key_type")
+    _ssh_host_add_to_config "$host_alias" "$hostname" "$user" "$port" "$key_file"
 }
 
 [[ $# -gt 0 ]] && _ssh_host_add "$@"
