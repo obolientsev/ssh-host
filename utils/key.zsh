@@ -34,4 +34,14 @@ _ssh_host_generate_key() {
     echo "$key_file"
 }
 
+_ssh_host_add_to_agent() {
+    local key_file="$1"
 
+    [[ -z "$SSH_AUTH_SOCK" ]] && { echo "SSH agent not running. Key not added to agent."; return 0; }
+
+    if [[ "$OSTYPE" == "darwin"* ]] && ssh-add --help 2>&1 | grep -q -- '--apple-use-keychain'; then
+        ssh-add --apple-use-keychain "$key_file" >/dev/null 2>&1
+    else
+        ssh-add "$key_file" >/dev/null 2>&1
+    fi
+}
