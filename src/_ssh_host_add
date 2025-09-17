@@ -49,6 +49,25 @@ _ssh_host_add() {
     key_file=$(_ssh_host_generate_key "$host_alias" "$key_type")
     _ssh_host_add_to_config "$host_alias" "$hostname" "$user" "$port" "$key_file"
     _ssh_host_add_to_agent "$key_file"
+
+    cat <<EOF
+
+Host '$host_alias' successfully configured!
+
+Next Steps:
+────────────────────────────────────────────────
+1. Deploy your public key to the server manually
+
+Public key content:
+   $(cat "${key_file}.pub")
+
+2. Test the connection:
+   ssh $host_alias
+
+3. Your public key is located at:
+   ${key_file}.pub
+
+EOF
 }
 
 [[ $# -gt 0 ]] && _ssh_host_add "$@"

@@ -4,7 +4,7 @@ source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
 _ssh_host_main() {
     local hosts=$(_ssh_host_print_hosts_list)
 
-    [[ -z "$hosts" ]] && { "${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_add" < /dev/tty > /dev/tty; return; }
+    [[ -z "$hosts" ]] && { "${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_add" add < /dev/tty > /dev/tty; return; }
 
     selected_host=$(echo "$hosts" | \
         _ssh_host_fzf_base --prompt="Type to filter: " \
