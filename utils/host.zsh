@@ -7,8 +7,8 @@ _ssh_host_print_hosts_list() {
     local host_aliases=($(_ssh_host_aliases_list))
 
     for host_alias in "${host_aliases[@]}"; do
-        local config=$(_ssh_host_config_by_alias "$host_alias" "hostname|user|port")
-        read -r hostname user port <<< "$(awk '{print $2}' <<< "$config" | xargs)"
+        local config=$(_ssh_host_config_by_alias "$host_alias" "user|hostname|port")
+        read -r user hostname port <<< "$(awk '{print $2}' <<< "$config" | xargs)"
         [[ -z "$hostname" || -z "$user" || -z "$port" ]] && continue
         _ssh_host_print_host_row "$host_alias" "$hostname" "$user" "$port"
     done
