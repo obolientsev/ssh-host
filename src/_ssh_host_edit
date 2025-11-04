@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+SSH_HOST_PLUGIN_DIR="${0:A:h:h}"
+source "${SSH_HOST_PLUGIN_DIR}/ssh-host.plugin.conf"
+source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
+source "${SSH_HOST_PLUGIN_DIR}/utils/metadata.zsh"
+source "${SSH_HOST_PLUGIN_DIR}/utils/validation.zsh"
+
+_ssh_host_edit() {
+    local host_alias="$1"
+    local key="$host_alias:desc"
+    local current_desc=$(_ssh_host_metadata_get "$key")
+    local host_description
+
+    host_description=$(_ssh_host_fzf_input "_ssh_host_metadata_validate_value" \
+                                            "" \
+                                            --prompt="Edit host description: " \
+                                            --query="$current_desc" \
+                                            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview_host $host_alias") || return 0
+
+    _ssh_host_metadata_set "$key" "$host_description"
+}
+
+[[ $# -gt 0 ]] && _ssh_host_edit "$@"
