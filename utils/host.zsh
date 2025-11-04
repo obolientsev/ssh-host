@@ -1,19 +1,3 @@
-# Generates formatted host list for fzf selection interface
-# _ssh_host_print_hosts_list
-# => "server1     → john@example.com:22"
-# => "production  → admin@prod.com:2222"
-_ssh_host_print_hosts_list() {
-    [[ ! -f "$SSH_HOST_BASE_CONFIG_FILE" ]] && return 1
-    local host_aliases=($(_ssh_host_aliases_list))
-
-    for host_alias in "${host_aliases[@]}"; do
-        local config=$(_ssh_host_config_by_alias "$host_alias" "user|hostname|port")
-        read -r user hostname port <<< "$(awk '{print $2}' <<< "$config" | xargs)"
-        [[ -z "$hostname" || -z "$user" || -z "$port" ]] && continue
-        _ssh_host_print_host_row "$host_alias" "$hostname" "$user" "$port"
-    done
-}
-
 # Formats single host entry with colors for display
 # _ssh_host_print_host_row "server1" "example.com" "john" "22"
 # => "server1     → john@example.com:22" (colorized)

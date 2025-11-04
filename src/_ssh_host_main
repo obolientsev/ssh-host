@@ -1,8 +1,10 @@
-source "${SSH_HOST_PLUGIN_DIR}/utils/host.zsh"
+#!/usr/bin/env zsh
+
+SSH_HOST_PLUGIN_DIR="${0:A:h:h}"
 source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
 
 _ssh_host_main() {
-    local hosts=$(_ssh_host_print_hosts_list)
+    local hosts=$(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_list)
 
     [[ -z "$hosts" ]] && { "${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_add" add < /dev/tty > /dev/tty; return; }
 
@@ -21,3 +23,5 @@ _ssh_host_main() {
         return $?
     fi
 }
+
+[[ "${(%):-%x}" == "${0}" ]] && _ssh_host_main "$@"
