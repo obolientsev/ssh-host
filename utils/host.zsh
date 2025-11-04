@@ -1,11 +1,18 @@
 # Formats single host entry with colors for display
 # _ssh_host_print_host_row "server1" "example.com" "john" "22"
-# => "server1     → john@example.com:22" (colorized)
+# => "server1              → john@example.com:22                                            |"
+# _ssh_host_print_host_row "server1" "example.com" "john" "22" "Production server"
+# => "server1              → john@example.com:22                                            | Production server"
 _ssh_host_print_host_row() {
-    local host_alias="$1" hostname="$2" user="$3" port="$4"
+    local host_alias="$1" hostname="$2" user="$3" port="$4" desc="$5"
 
-    printf "${SSH_HOST_COLOR_BLUE}%-20s${SSH_HOST_COLOR_NC} → ${SSH_HOST_COLOR_CYAN}%s${SSH_HOST_COLOR_NC}@${SSH_HOST_COLOR_WHITE}%s${SSH_HOST_COLOR_NC}:${SSH_HOST_COLOR_GRAY}%s${SSH_HOST_COLOR_NC}\n" \
-           "$host_alias" "$user" "$hostname" "$port"
+    local connection_info
+    printf -v connection_info "${SSH_HOST_COLOR_CYAN}%s${SSH_HOST_COLOR_NC}@${SSH_HOST_COLOR_WHITE}%.20s${SSH_HOST_COLOR_NC}:${SSH_HOST_COLOR_GRAY}%s${SSH_HOST_COLOR_NC}" \
+                              "$user" "$hostname" "$port"
+
+    printf "${SSH_HOST_COLOR_BLUE}%-20s${SSH_HOST_COLOR_NC} → %-65s|" "$host_alias" "$connection_info"
+    [[ -n "$desc" ]] && printf " ${SSH_HOST_COLOR_NC}%s${SSH_HOST_COLOR_NC}" "$desc"
+    printf "\n"
 }
 
 # Displays formatted SSH host configuration details

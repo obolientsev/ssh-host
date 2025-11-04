@@ -3,16 +3,18 @@
 SSH_HOST_PLUGIN_DIR="${0:A:h:h}"
 source "${SSH_HOST_PLUGIN_DIR}/ssh-host.plugin.conf"
 source "${SSH_HOST_PLUGIN_DIR}/utils/host.zsh"
+source "${SSH_HOST_PLUGIN_DIR}/utils/metadata.zsh"
 
 _ssh_host_list() {
     [[ ! -f "$SSH_HOST_BASE_CONFIG_FILE" ]] && return 1
     local host_aliases=($(_ssh_host_aliases_list))
+    _ssh_host_metadata_load
 
     for host_alias in "${host_aliases[@]}"; do
         local config=$(_ssh_host_config_by_alias "$host_alias" "user|hostname|port")
         read -r user hostname port <<< "$(awk '{print $2}' <<< "$config" | xargs)"
         [[ -z "$hostname" || -z "$user" || -z "$port" ]] && continue
-        _ssh_host_print_host_row "$host_alias" "$hostname" "$user" "$port"
+        _ssh_host_print_host_row "$host_alias" "$hostname" "$user" "$port" "${SSH_HOST_METADATA[${host_alias}:desc]}"
     done
 }
 
