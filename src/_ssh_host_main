@@ -11,7 +11,7 @@ _ssh_host_main() {
     selected_host=$(echo "$hosts" | \
         _ssh_host_fzf_base --prompt="Type to filter: " \
             --info="inline-right: [Enter] Connect • [Ctrl-N] Add New • [Ctrl-E] Edit • [Esc] Quit " \
-            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview_host {1}" \
+            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview {1}" \
             --bind="esc:abort" \
             --bind="ctrl-n:execute(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_add add < /dev/tty > /dev/tty)+abort" \
             --bind="ctrl-d:execute(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_edit {1} < /dev/tty > /dev/tty)+reload(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_list)" \

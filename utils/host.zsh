@@ -84,7 +84,7 @@ _ssh_host_parse_config_lines() {
 # => "port 22"
 _ssh_host_config_by_alias() {
     local host_alias="$1"
-    local fields="$2"
+    local fields="${2:-$SSH_HOST_PREVIEW_FIELDS}"
     local config
 
     config=$(ssh -G "$host_alias" 2>/dev/null)

@@ -16,7 +16,7 @@ _ssh_host_edit() {
                                             "" \
                                             --prompt="Edit host description: " \
                                             --query="$current_desc" \
-                                            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview_host $host_alias") || return 0
+                                            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview $host_alias") || return 0
 
     _ssh_host_metadata_set "$key" "$host_description"
 }

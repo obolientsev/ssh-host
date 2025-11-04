@@ -11,11 +11,11 @@ source "${SSH_HOST_PLUGIN_DIR}/utils/key.zsh"
 _ssh_host_add() {
     local host_alias hostname user port key_type
     input() {
-        local prompt="$1" options="$2" validator="$3"
+        local prompt="$1" options="$2" validator="$3" placeholder="..."
         _ssh_host_fzf_input "$validator" \
                             "$options" \
                             --prompt="$prompt" \
-                            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview_form '${host_alias}' '${hostname}' '${user}' '${port}' '${key_type}'"
+                            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview '${host_alias:-$placeholder}' '${hostname:-$placeholder}' '${user:-$placeholder}' '${port:-$placeholder}' '${key_type:-$placeholder}'"
     }
 
     host_alias=$(input  "Enter unique host alias name: " \
