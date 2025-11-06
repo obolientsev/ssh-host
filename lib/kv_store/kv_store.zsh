@@ -65,7 +65,7 @@ _kv_store_set() {
     local value="$3"
     local temp_file="${file}.tmp"
 
-    [[ -f "$file" ]] || _init_kv_store "$file"
+    [[ -f "$file" ]] || _kv_store_init "$file"
 
     _kv_store_validate_key "$key" || return 1
     _kv_store_validate_value "$value" || return 1

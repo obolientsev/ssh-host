@@ -8,17 +8,29 @@ source "${SSH_HOST_PLUGIN_DIR}/utils/validation.zsh"
 
 _ssh_host_edit() {
     local host_alias="$1"
-    local key="$host_alias:desc"
-    local current_desc=$(_ssh_host_metadata_get "$key")
-    local host_description
+    local field="$2"
+    local key="$host_alias:$field"
+    local current_value=$(_ssh_host_metadata_get "$key")
+    local new_value
 
-    host_description=$(_ssh_host_fzf_input "_ssh_host_metadata_validate_value" \
+    case "$field" in
+        desc)
+            new_value=$(_ssh_host_fzf_input "_ssh_host_metadata_validate_value" \
                                             "" \
                                             --prompt="Edit host description: " \
-                                            --query="$current_desc" \
+                                            --query="$current_value" \
                                             --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview $host_alias") || return 0
+            ;;
+        pinned)
+          new_value=$(( current_value == 1 ? 0 : 1 ))
+          ;;
+        *)
+          echo "Error: Invalid field '$field'." >&2
+          return 1
+          ;;
+    esac
 
-    _ssh_host_metadata_set "$key" "$host_description"
+    _ssh_host_metadata_set "$key" "$new_value"
 }
 
 [[ $# -gt 0 ]] && _ssh_host_edit "$@"

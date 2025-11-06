@@ -36,5 +36,10 @@ _kv_store_validate_value() {
         exit_code=1
     }
 
+    [[ "$value" == *"'"* || "$value" == *'"'* ]] && {
+        echo "Value must not contain quotes" >&2
+        exit_code=1
+    }
+
     return "$exit_code"
 }

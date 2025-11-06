@@ -4,13 +4,15 @@
 # _ssh_host_print_host_row "server1" "example.com" "john" "22" "Production server"
 # => "server1              → john@example.com:22                                            | Production server"
 _ssh_host_print_host_row() {
-    local host_alias="$1" hostname="$2" user="$3" port="$4" desc="$5"
+    local host_alias="$1" hostname="$2" user="$3" port="$4" desc="$5" is_pinned="$6"
 
-    local connection_info
+    local connection_info is_pinned_icon
     printf -v connection_info "${SSH_HOST_COLOR_CYAN}%s${SSH_HOST_COLOR_NC}@${SSH_HOST_COLOR_WHITE}%.20s${SSH_HOST_COLOR_NC}:${SSH_HOST_COLOR_GRAY}%s${SSH_HOST_COLOR_NC}" \
                               "$user" "$hostname" "$port"
 
-    printf "${SSH_HOST_COLOR_BLUE}%-20s${SSH_HOST_COLOR_NC} → %-65s|" "$host_alias" "$connection_info"
+    printf -v is_pinned_icon "%s" "$([[ $is_pinned == 1 ]] && echo '★' || echo ' ')"
+    printf "${SSH_HOST_COLOR_BLUE}%-20s${SSH_HOST_COLOR_NC} %s → %-65s|" \
+            "$host_alias" "$is_pinned_icon" "$connection_info"
     [[ -n "$desc" ]] && printf " ${SSH_HOST_COLOR_NC}%s${SSH_HOST_COLOR_NC}" "$desc"
     printf "\n"
 }

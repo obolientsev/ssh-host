@@ -14,8 +14,10 @@ _ssh_host_list() {
         local config=$(_ssh_host_config_by_alias "$host_alias" "user|hostname|port")
         read -r user hostname port <<< "$(awk '{print $2}' <<< "$config" | xargs)"
         [[ -z "$hostname" || -z "$user" || -z "$port" ]] && continue
-        _ssh_host_print_host_row "$host_alias" "$hostname" "$user" "$port" "${SSH_HOST_METADATA[${host_alias}:desc]}"
-    done
+        _ssh_host_print_host_row "$host_alias" "$hostname" "$user" "$port" \
+                                  "${SSH_HOST_METADATA[${host_alias}:desc]}" \
+                                  "${SSH_HOST_METADATA[${host_alias}:pinned]}"
+    done | LC_ALL=C sort -k3,3r -k1,1
 }
 
 [[ "${(%):-%x}" == "${0}" ]] && _ssh_host_list
