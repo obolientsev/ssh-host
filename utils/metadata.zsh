@@ -1,10 +1,10 @@
 source "${0:A:h:h}/lib/kv_store/kv_store.zsh"
 
 _ssh_host_metadata_load() {
-    [[ -f "$SSH_HOST_METADATA_FILE" ]] || return 0
-
     typeset -gA SSH_HOST_METADATA
     SSH_HOST_METADATA=()
+
+    [[ -f "$SSH_HOST_METADATA_FILE" ]] || return 0
 
     while IFS='=' read -r key value; do
       [[ -n $key ]] || continue

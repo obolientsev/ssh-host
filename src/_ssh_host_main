@@ -8,22 +8,18 @@ _ssh_host_main() {
 
     [[ -z "$hosts" ]] && { "${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_add" add < /dev/tty > /dev/tty; return; }
 
-    selected_host=$(echo "$hosts" | \
-        _ssh_host_fzf_base --prompt="Type to filter: " \
-            --info="inline-right: [Enter] Connect • [Ctrl-N] Add New • [Ctrl-P] Pin • [Ctrl-E] Edit • [Esc] Quit " \
+    echo "$hosts" | _ssh_host_fzf_base \
+            --ghost="Type to filter: " \
             --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview {1}" \
             --bind="esc:abort" \
+            --bind="enter:become(ssh {1})" \
             --bind="ctrl-n:become(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_add add < /dev/tty > /dev/tty)+abort" \
             --bind="ctrl-e:execute(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_edit {1} desc < /dev/tty > /dev/tty)+reload(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_list)" \
             --bind="ctrl-p:execute-silent(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_edit {1} pinned < /dev/tty > /dev/tty)+reload(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_list)" \
-            --preview-window=right:40%)
-
-    if [[ -n "$selected_host" ]]; then
-        local host_alias
-        host_alias=$(echo "$selected_host" | awk '{print $1}')
-        ssh "$host_alias"
-        return $?
-    fi
+            --bind 'focus:+bg-transform-footer:
+                    echo "[Enter] Connect • [Ctrl-N] Add New  • [Esc] Quit"
+                    echo "[Ctrl-E] Edit   • [Ctrl-P] Pin      • "' \
+            --preview-window=right:40%
 }
 
 [[ "${(%):-%x}" == "${0}" ]] && _ssh_host_main "$@"

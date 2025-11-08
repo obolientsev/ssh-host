@@ -20,7 +20,7 @@ _kv_store_init() {
     local file="$1"
     local file_dir
 
-    [[ -f "$file" ]] || return 0
+    [[ -f "$file" ]] && return 0
 
     file_dir="$(dirname "$file")"
     [[ -d "$file_dir" ]] || mkdir -p -m 700 "$file_dir" || {
