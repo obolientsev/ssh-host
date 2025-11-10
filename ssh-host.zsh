@@ -7,8 +7,10 @@
 # License: MIT
 # Copyright (c) 2025 obolientsev
 
+SSH_HOST_PLUGIN_DIR="${0:A:h}"
+
 ssh-host() {
-  _ssh_host_check_dependencies && "${0:A:h}/src/_ssh_host_main" "$@"
+  _ssh_host_check_dependencies && "${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_main" "$@"
 }
 
 _ssh_host_check_dependencies() {
