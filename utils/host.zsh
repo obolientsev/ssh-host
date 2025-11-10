@@ -95,6 +95,19 @@ _ssh_host_config_by_alias() {
     _ssh_host_parse_config_lines "$fields" <<< "$config"
 }
 
+# Ensures base SSH config includes plugin config file
+_ssh_host_ensure_include_directive() {
+    local config_file="${1:-$SSH_HOST_CONFIG_FILE}"
+    [[ -f "$SSH_HOST_BASE_CONFIG_FILE" ]] || touch "$SSH_HOST_BASE_CONFIG_FILE"
+    [[ -f "$config_file" ]] || touch "$config_file"
+
+    grep -Fq "Include ${config_file}" "$SSH_HOST_BASE_CONFIG_FILE" && return 0
+    {
+        printf "Include %s\n\n" "$config_file"
+        cat "$SSH_HOST_BASE_CONFIG_FILE"
+    } > "${SSH_HOST_BASE_CONFIG_FILE}.tmp" && mv "${SSH_HOST_BASE_CONFIG_FILE}.tmp" "$SSH_HOST_BASE_CONFIG_FILE"
+}
+
 # Adds SSH host configuration to config file
 # _ssh_host_add_to_config "server1" "example.com" "ubuntu" "22" "path/to/key"
 # => Creates backup before modification
@@ -102,6 +115,7 @@ _ssh_host_config_by_alias() {
 _ssh_host_add_to_config() {
     local host_alias="$1" hostname="$2" user="$3" port="$4" identity_file="$5"
     local config_file="$SSH_HOST_CONFIG_FILE"
+    _ssh_host_ensure_include_directive "$config_file"
 
     _ssh_host_validate_alias "$host_alias" || return 1
     _ssh_host_validate_hostname "$hostname" || return 1
