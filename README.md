@@ -9,6 +9,7 @@ A zsh plugin for securely managing SSH hosts with an interactive fzf interface.
 
 - **Interactive Management**: Browse and connect to SSH hosts with fzf-powered fuzzy search and live previews
 - **Secure Key Creation**: Generate ed25519 or RSA-4096 keys with automatic SSH agent integration
+- **Host Organization**: Pin frequently-used hosts and add descriptions for quick identification
 - **Non-Invasive**: Separate SSH config file with automatic backups
 - **Minimal Dependencies**: Uses native SSH tools for maximum compatibility
 
@@ -19,7 +20,8 @@ A zsh plugin for securely managing SSH hosts with an interactive fzf interface.
 
 ## Installation
 
-### Oh My Zsh
+<details>
+<summary><b>Oh My Zsh</b></summary>
 
 1. Clone the repository:
 ```bash
@@ -35,8 +37,10 @@ plugins=(ssh-host $plugins)
 ```bash
 source ~/.zshrc
 ```
+</details>
 
-### Zinit / Antigen / Znap
+<details>
+<summary>Zinit / Antigen / Znap</summary>
 
 Add to your `~/.zshrc`:
 ```bash
@@ -46,10 +50,13 @@ antigen bundle obolientsev/ssh-host
 # or
 znap source "obolientsev/ssh-host"
 ```
+</details>
 
 ## Quick Start
 
-1. Install fzf:
+<details>
+<summary>1. Install fzf:</summary>
+
 ```bash
 # macOS
 brew install fzf
@@ -60,6 +67,7 @@ sudo apt install fzf
 # Arch Linux
 sudo pacman -S fzf
 ```
+</details>
 
 2. Launch the plugin:
 ```bash
@@ -69,13 +77,16 @@ ssh-host
 3. Follow the instructions to add your first host.
 
 
-### Keyboard Shortcuts
+### Key Bindings
 
-**Controls:**
-- `↑/↓` - Navigate hosts
-- `Enter` - Connect to selected host
-- `Ctrl-N` - Add new host
-- `Esc` - Quit
+| Key       | Action                               |
+|-----------|--------------------------------------|
+| `↑/↓`    | Navigate hosts                        |
+| `Enter`  | Connect to selected host              |
+| `Ctrl-N` | Add new host                          |
+| `Ctrl-E` | Edit selected host description        |
+| `Ctrl-P` | Toggle `pin` status of selected host  |
+| `Esc`    | Quit                                  |
 
 ---
 
