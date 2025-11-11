@@ -19,6 +19,8 @@ _ssh_host_edit() {
                                             "" \
                                             --prompt="Edit host description: " \
                                             --query="$current_value" \
+                                            --ghost="[api] [prod] [eu1]" \
+                                            --footer=" [Enter] Submit • [Esc] Quit " \
                                             --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview $host_alias") || return 0
             ;;
         pinned)

@@ -11,34 +11,43 @@ source "${SSH_HOST_PLUGIN_DIR}/utils/key.zsh"
 _ssh_host_add() {
     local host_alias hostname user port key_type
     input() {
-        local prompt="$1" options="$2" validator="$3" placeholder="..."
+        local prompt="$1" placeholder="${2}" options="$3" validator="$4"
         _ssh_host_fzf_input "$validator" \
                             "$options" \
                             --prompt="$prompt" \
-                            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview '${host_alias:-$placeholder}' '${hostname:-$placeholder}' '${user:-$placeholder}' '${port:-$placeholder}' '${key_type:-$placeholder}'"
+                            --ghost="$placeholder" \
+                            --info="inline-right: New Host Setup " \
+                            --footer=" [Enter] Submit • [Esc] Quit " \
+                            --preview="${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_preview '${host_alias:-"..."}' '${hostname:-"..."}' '${user:-"..."}' '${port:-"..."}' '${key_type:-"..."}'"
     }
 
     host_alias=$(input  "Enter unique host alias name: " \
+                        "api-prod-eu1" \
                         "" \
                         "_ssh_host_validate_alias") || return 1
 
     hostname=$(input  "Enter the server hostname or IP address: " \
+                      "api1.eu.prod.example.com" \
                       "" \
                       "_ssh_host_validate_hostname") || return 1
 
     user=$(input  "Enter the SSH username: " \
+                  "ubuntu" \
                   "" \
                   "_ssh_host_validate_username") || return 1
 
     port=$(input  "Select port or type custom port: " \
+                  "2202" \
                   "22\n2222\n2200\n8022\n22022" \
                   "_ssh_host_validate_port") || return 1
 
     key_type=$(input  "Choose SSH key type: " \
+                      "ed25519" \
                       "ed25519 - recommended NIST\nrsa - legacy rsa-4096" \
                       "_ssh_host_validate_key_type") || return 1
 
     confirm_result=$(input  "Confirm: " \
+                            "" \
                             "Yes - Create this configuration\nNo - Cancel" \
                             "") || return 1
 

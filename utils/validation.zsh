@@ -75,12 +75,12 @@ _ssh_host_validate_username() {
 _ssh_host_validate_port() {
     local port="$1" exit_code=0
     
-    [[ "$port" =~ ^[0-9]+$ ]] || \
-        { echo  'Port must be a number'; exit_code=1; }
-    [[ "$port" -ge 1 ]] || \
-        { echo  'Port must be greater than 0'; exit_code=1; }
-    [[ "$port" -le 65535 ]] || \
-        { echo  'Port must be less than 65536'; exit_code=1; }
+    [[ "$port" =~ ^[0-9]+$ ]] && {
+        [[ "$port" -ge 1 ]] || \
+            { echo  'Port must be greater than 0'; exit_code=1; }
+        [[ "$port" -le 65535 ]] || \
+            { echo  'Port must be less than 65536'; exit_code=1; }
+    } || { echo  'Port must be a number'; exit_code=1; }
 
     return "$exit_code"
 }
