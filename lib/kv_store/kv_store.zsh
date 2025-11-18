@@ -1,4 +1,4 @@
-KV_STORE_PLUGIN_DIR="${0:A:h}"
+KV_STORE_PLUGIN_DIR="${KV_STORE_PLUGIN_DIR:-${${(%):-%x}:A:h}}"
 source "${KV_STORE_PLUGIN_DIR}/utils/validation.zsh"
 
 # Returns all key-value pairs from the store

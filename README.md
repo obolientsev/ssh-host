@@ -1,6 +1,7 @@
 # ❯❯ ssh-host 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![zsh](https://img.shields.io/badge/zsh-%3E%3D5.0-orange.svg)](https://www.zsh.org/)
+[![Build Status](https://github.com/obolientsev/ssh-host/actions/workflows/ci.yml/badge.svg)](https://github.com/obolientsev/ssh-host/actions/workflows/ci.yml)
 ![Interactive demo](demo.gif)
 
 A zsh plugin for securely managing SSH hosts with an interactive fzf interface.

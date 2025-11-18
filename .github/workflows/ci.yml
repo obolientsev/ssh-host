@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    container:
+      image: bats/bats:${{ matrix.bats-version }}
+
+    strategy:
+      matrix:
+        bats-version:
+          - 'latest'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run bats tests (kv_store)
+        run: |
+          bats ./lib/kv_store/tests/*.bats ./lib/kv_store/tests/**/*.bats

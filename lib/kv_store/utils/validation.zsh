@@ -9,17 +9,17 @@ _kv_store_validate_key() {
     [[ -n "$key" ]] || \
         { echo  'Alias cannot be empty'; exit_code=1; }
 
-    [[ "$key" == *:* ]] || \
-        { echo 'Key must contain ":" separator (format: namespace:key)'; exit_code=1; }
+    [[ "$key" == *:* ]] && [[ "${key%%:*}" != "" && "${key##*:}" != "" ]] || \
+        { echo 'Key must be in format namespace:key and contain ":" separator (both sides required)'; exit_code=1; }
 
     [[ "$key" =~ ^[A-Za-z0-9._:-]+$ ]] || \
         { echo 'Invalid key format (format: namespace:key)'; exit_code=1; }
 
     [[ "$key" != *"["* && "$key" != *"]"* ]] || \
-        { echo "Key must not contain '[' or ']'"; exit_code=1; }
+        { echo 'Key must not contain "[" or "]"'; exit_code=1; }
 
     [[ ! "$key" =~ [[:space:]] ]] || \
-        { echo "Key must not contain spaces"; exit_code=1; }
+        { echo 'Key must not contain spaces'; exit_code=1; }
 
     return "$exit_code"
 }
@@ -31,13 +31,13 @@ _kv_store_validate_value() {
     local value="$1"
     local exit_code=0
 
-    [[ "$value" == *$'\n'* ]] && {
+    [[ "$value" =~ $'\n' ]] && {
         echo 'Value must not contain newlines' >&2
         exit_code=1
     }
 
     [[ "$value" == *"'"* || "$value" == *'"'* ]] && {
-        echo "Value must not contain quotes" >&2
+        echo 'Value must not contain quotes' >&2
         exit_code=1
     }
 
