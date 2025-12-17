@@ -21,6 +21,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run bats tests (kv_store)
-        run: |
-          bats ./lib/kv_store/tests/*.bats ./lib/kv_store/tests/**/*.bats
+      - name: Install SSH client
+        run: apk add --no-cache openssh-client
+
+      - name: Run kv_store tests
+        run: bats ./lib/kv_store/tests/*.bats ./lib/kv_store/tests/**/*.bats
+
+      - name: Run sshcfg_store tests
+        run: bats ./lib/sshcfg_store/tests/*.bats ./lib/sshcfg_store/tests/**/*.bats

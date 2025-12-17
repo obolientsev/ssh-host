@@ -8,9 +8,6 @@ _ssh_host_generate_key() {
     local key_dir="$SSH_HOST_KEYS_DIR/$host_alias"
     local key_file="$key_dir/id_$key_type"
 
-    _ssh_host_validate_alias "$host_alias" || return 1
-    _ssh_host_validate_key_type "$key_type" || return 1
-
     _ssh_host_archive_path "$key_dir" || return 1
     mkdir -p -m 700 "$key_dir" || { echo "Failed to create $key_dir directory"; return 1; }
 

@@ -7,7 +7,7 @@ source "${SSH_HOST_PLUGIN_DIR}/utils/metadata.zsh"
 
 _ssh_host_list() {
     [[ ! -f "$SSH_HOST_BASE_CONFIG_FILE" ]] && return 1
-    local host_aliases=($(_ssh_host_aliases_list))
+    local host_aliases=($(_ssh_host_alias_list))
     _ssh_host_metadata_load
 
     for host_alias in "${host_aliases[@]}"; do

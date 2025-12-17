@@ -1,3 +1,5 @@
+source "${SSH_HOST_PLUGIN_DIR}/lib/sshcfg_store/sshcfg_store.zsh"
+
 # Formats single host entry with colors for display
 # _ssh_host_print_host_row "server1" "example.com" "john" "22"
 # => "server1              → john@example.com:22                                            |"
@@ -34,49 +36,13 @@ _ssh_host_print_host_config() {
 }
 
 # Extracts all host aliases from SSH config with Include support
-# _ssh_host_aliases_list
+# _ssh_host_alias_list
 # => "server_alias_1"
 # => "server_alias_2"
-# _ssh_host_aliases_list "/path/to/config"
-_ssh_host_aliases_list() {
+# _ssh_host_alias_list "/path/to/config"
+_ssh_host_alias_list() {
     local conf_file="${1:-$SSH_HOST_BASE_CONFIG_FILE}"
-    local aliases=()
-    local includes=()
-
-    while read -r type rest; do
-        case "$type" in
-            Host)
-                for alias in $rest; do
-                    [[ "$alias" != "*" && "$alias" != *"?"* ]] && aliases+=("$alias")
-                done
-                ;;
-            Include)
-                includes+=("$rest")
-                ;;
-        esac
-    done < <(_ssh_host_parse_config_lines "Host|Include" < "$conf_file")
-
-    for inc in "${includes[@]}"; do
-      for expanded_path in ${inc/#\~/$HOME}; do
-        [[ -f "$expanded_path" ]] && aliases+=( $(_ssh_host_aliases_list "$expanded_path") )
-      done
-    done
-    printf "%s\n" "${aliases[@]}"
-}
-
-# Parses SSH config lines matching field patterns, strips comments
-# _ssh_host_parse_config_lines "Host|Include" < ~/.ssh/config
-# => "Host server1 server2"
-# _ssh_host_parse_config_lines "hostname|user" <<< "$ssh_output"
-# => "hostname example.com"
-# => "user ubuntu"
-_ssh_host_parse_config_lines() {
-    local fields="$1"
-
-    awk -v pat="$fields" '$0 ~ "^[[:space:]]*(" pat ")[[:space:]]+" {
-           sub(/#.*/, "")
-           print $1, substr($0, index($0,$2))
-       }'
+    _sshcfg_store_alias_list "$conf_file"
 }
 
 # Resolves SSH config for host using native ssh -G command
@@ -87,25 +53,8 @@ _ssh_host_parse_config_lines() {
 _ssh_host_config_by_alias() {
     local host_alias="$1"
     local fields="${2:-$SSH_HOST_PREVIEW_FIELDS}"
-    local config
 
-    config=$(ssh -G "$host_alias" 2>/dev/null)
-    [[ -z "$config" ]] && return 1
-
-    _ssh_host_parse_config_lines "$fields" <<< "$config"
-}
-
-# Ensures base SSH config includes plugin config file
-_ssh_host_ensure_include_directive() {
-    local config_file="${1:-$SSH_HOST_CONFIG_FILE}"
-    [[ -f "$SSH_HOST_BASE_CONFIG_FILE" ]] || touch "$SSH_HOST_BASE_CONFIG_FILE"
-    [[ -f "$config_file" ]] || touch "$config_file"
-
-    grep -Fq "Include ${config_file}" "$SSH_HOST_BASE_CONFIG_FILE" && return 0
-    {
-        printf "Include %s\n\n" "$config_file"
-        cat "$SSH_HOST_BASE_CONFIG_FILE"
-    } > "${SSH_HOST_BASE_CONFIG_FILE}.tmp" && mv "${SSH_HOST_BASE_CONFIG_FILE}.tmp" "$SSH_HOST_BASE_CONFIG_FILE"
+    _sshcfg_store_get "$host_alias" "$fields"
 }
 
 # Adds SSH host configuration to config file
@@ -113,27 +62,6 @@ _ssh_host_ensure_include_directive() {
 # => Creates backup before modification
 # => Appends Host block to SSH config file
 _ssh_host_add_to_config() {
-    local host_alias="$1" hostname="$2" user="$3" port="$4" identity_file="$5"
     local config_file="$SSH_HOST_CONFIG_FILE"
-    _ssh_host_ensure_include_directive "$config_file"
-
-    _ssh_host_validate_alias "$host_alias" || return 1
-    _ssh_host_validate_hostname "$hostname" || return 1
-    _ssh_host_validate_username "$user" || return 1
-    _ssh_host_validate_port "$port" || return 1
-
-    _ssh_host_backup_file "$config_file" "$SSH_HOST_BACKUPS_DIR"
-
-    cat >> "$config_file" << EOF
-
-Host $host_alias
-    HostName $hostname
-    User $user
-    Port $port
-EOF
-
-    [[ -n "$identity_file" ]] && cat >> "$config_file" << EOF
-    IdentityFile $identity_file
-    IdentitiesOnly yes
-EOF
+    _sshcfg_store_add "$config_file" "$@"
 }
