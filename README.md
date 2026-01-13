@@ -4,25 +4,26 @@
 [![zsh](https://img.shields.io/badge/zsh-%3E%3D5.0-orange.svg)](https://www.zsh.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Zsh plugin to simplify interaction with SSH config. **Browse/search/connect** to configured hosts. **Securely add** new configs. **Pin/describe** entries for better navigation.
-
-![Interactive demo](demo.gif)
+Zsh plugin to simplify interaction with SSH config, ssh, scp.
 
 ## Table of Contents
 
-- [Features](#features)
+- [Key Features](#key-features)
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
 - [Key Bindings](#key-bindings)
 - [Troubleshooting](#troubleshooting)
 
-## Features
+## Key Features
 
-- **Interactive Management**: Browse and connect to configured hosts with fzf-powered fuzzy search and live previews
-- **Secure Key Creation**: Generate ed25519 or RSA-4096 keys with automatic SSH agent integration
-- **Host Organization**: Pin frequently-used hosts and add descriptions for quick identification
-- **Non-Invasive**: Separate SSH config file with automatic backups
-- **Minimal Dependencies**: Uses native SSH tools for maximum compatibility
+|  |  |
+|---------|------|
+| **Interactive Host Selection**<br>Browse hosts from .ssh/config with fuzzy search and live preview of connection details, port, key, and descriptions. Filter and navigate with keyboard. | ![Host Selection](demo/select.gif) |
+| **Quick Host Setup**<br>Add new hosts through guided setup. Plugin automatically manages SSH config with Include directive, keeping your main config clean. Supports ed25519 and RSA-4096 key generation with SSH agent integration. | ![Add Host](demo/add.gif) |
+| **SCP Support**<br>Upload files/directories with `ctrl-u`, download with `ctrl-d`. Auto-detects recursive transfers for directories. | ![SCP Support](demo/scp.gif) |
+| **Pin**<br>Press `ctrl-p` to pin frequently-used hosts to the top of your list. Quick access to servers or most used environments. | ![Pin Host](demo/pin.gif) |
+| **Custom Descriptions**<br>Press `ctrl-e` to add descriptions to hosts. Document server purpose, environment (prod/staging/dev), or notes. | ![Edit Description](demo/edit.gif) |
+
 
 ## Requirements
 
@@ -87,6 +88,8 @@ Zsh plugin to simplify interaction with SSH config. **Browse/search/connect** to
 | `Ctrl-N` | Add new host                          |
 | `Ctrl-E` | Edit selected host description        |
 | `Ctrl-P` | Toggle `pin` status of selected host  |
+| `Ctrl-U` | Upload file to selected host          |
+| `Ctrl-D` | Download file from selected host      |
 | `Esc`    | Quit                                  |
 
 ## Troubleshooting
