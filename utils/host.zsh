@@ -13,7 +13,7 @@ _ssh_host_print_host_row() {
                               "$user" "$hostname" "$port"
 
     printf -v is_pinned_icon "%s" "$([[ $is_pinned == 1 ]] && echo '★' || echo ' ')"
-    printf "${SSH_HOST_COLOR_BLUE}%-20s${SSH_HOST_COLOR_NC} %s → %-65s|" \
+    printf "${SSH_HOST_COLOR_BLUE}%-20s${SSH_HOST_COLOR_NC} %s → %-55s|" \
             "$host_alias" "$is_pinned_icon" "$connection_info"
     [[ -n "$desc" ]] && printf " ${SSH_HOST_COLOR_NC}%s${SSH_HOST_COLOR_NC}" "$desc"
     printf "\n"
@@ -32,7 +32,7 @@ _ssh_host_print_host_config() {
     printf "${SSH_HOST_COLOR_NC}Host alias:${SSH_HOST_COLOR_BLUE} %s\n" "$host_alias"
     printf "${SSH_HOST_COLOR_GRAY}%*s\n" "$(tput cols)" '' | tr ' ' '-'
     awk -v c1="$SSH_HOST_COLOR_CYAN" -v nc="$SSH_HOST_COLOR_NC" \
-        '{printf "  %s%-32s%s %s\n", nc, $1 ":", c1, $2}' <<< "$config"
+        '{printf "  %s%-21s%s %s\n", nc, $1 ":", c1, $2}' <<< "$config"
 }
 
 # Extracts all host aliases from SSH config with Include support

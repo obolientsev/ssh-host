@@ -27,6 +27,7 @@ _ssh_host_fzf_input() {
         result=$(echo -e "$options" | _ssh_host_fzf_base  --height=12 \
                                                           --header="$current_error" \
                                                           --print-query \
+                                                          --footer=" [Enter] Submit • [Esc] Quit " \
                                                           "$@")
 
         [[ $? -eq 130 ]] && return 1

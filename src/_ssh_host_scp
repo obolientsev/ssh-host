@@ -1,0 +1,49 @@
+#!/usr/bin/env zsh
+
+SSH_HOST_PLUGIN_DIR="${0:A:h:h}"
+source "${SSH_HOST_PLUGIN_DIR}/ssh-host.plugin.conf"
+source "${SSH_HOST_PLUGIN_DIR}/utils/scp.zsh"
+source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
+
+_ssh_host_scp() {
+    local host_alias="$1" direction="$2" source_path destination_path
+
+    [[ -z "$host_alias" ]] && { echo "Error: host_alias required"; return 1; }
+
+    case "$direction" in
+        upload)
+            source_path=$(_ssh_host_scp_input_path "" --prompt "Upload (select or type any path):" --query "$PWD") || return 1
+            destination_path=$(_ssh_host_scp_input_path "$host_alias" --prompt "Remote path (select or type any path): " --query "./") || return 1
+            ;;
+        download)
+            source_path=$(_ssh_host_scp_input_path "$host_alias" --prompt "Remote path (select or type any path): " --query "./") || return 1
+            destination_path=$(_ssh_host_scp_input_path "" --prompt "Destination (select or type any path): " --query "$PWD") || return 1
+            ;;
+        *)
+            echo "Error: Invalid direction '$direction'. Use 'upload' or 'download'."
+            return 1
+            ;;
+    esac
+
+    _ssh_host_scp_execute "$source_path" "$destination_path"
+}
+
+_ssh_host_scp_input_path() {
+    local host_alias="$1" result_path
+    shift 1
+    local ssh_prefix="${host_alias:+ssh -o ConnectTimeout=3 '$host_alias'}"
+    local find_path="$ssh_prefix find {q} -maxdepth 3 -not -path '*/.*'"
+
+    result=$(_ssh_host_fzf_base --header="Quick paths" \
+        --ghost="/home/user/path" \
+        --disabled \
+        --bind "start:reload:$find_path" \
+        --bind "change:reload:sleep 0.5;$find_path" \
+        --footer=" [Enter] Submit • [Esc] Quit " \
+        "$@")
+
+    [[ -z "$result" ]] && { echo "Scp cancelled. No path provided." >&2; return 1; }
+    echo "${host_alias:+$host_alias:}$result"
+}
+
+[[ "${(%):-%x}" == "${0}" ]] && _ssh_host_scp "$@"

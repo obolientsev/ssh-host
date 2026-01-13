@@ -16,9 +16,12 @@ _ssh_host_main() {
             --bind="ctrl-n:become(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_add add < /dev/tty > /dev/tty)+abort" \
             --bind="ctrl-e:execute(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_edit {1} desc < /dev/tty > /dev/tty)+reload(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_list)" \
             --bind="ctrl-p:execute-silent(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_edit {1} pinned < /dev/tty > /dev/tty)+reload(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_list)" \
+            --bind="ctrl-u:become(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_scp {1} upload < /dev/tty > /dev/tty)" \
+            --bind="ctrl-d:become(${SSH_HOST_PLUGIN_DIR}/src/_ssh_host_scp {1} download < /dev/tty > /dev/tty)" \
             --bind 'focus:+bg-transform-footer:
-                    echo "[Enter] Connect • [Ctrl-N] Add New  • [Esc] Quit"
-                    echo "[Ctrl-E] Edit   • [Ctrl-P] Pin      • "' \
+                    echo "[Enter] Connect  • [Esc] Quit"
+                    echo "[Ctrl-N] Add New • [Ctrl-E] Edit • [Ctrl-P] Pin"
+                    echo "[Ctrl-U / Ctrl-D] Upload/Download File"' \
             --preview-window=right:40%
 }
 
