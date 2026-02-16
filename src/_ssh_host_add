@@ -8,7 +8,7 @@ source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
 source "${SSH_HOST_PLUGIN_DIR}/utils/key.zsh"
 
 _ssh_host_add() {
-    local host_alias hostname user port key_type
+    local host_alias hostname user port key_type key_file
     input() {
         local prompt="$1" placeholder="${2}" options="$3" validator="$4"
         _ssh_host_fzf_input "$validator" \
@@ -42,7 +42,7 @@ _ssh_host_add() {
 
     key_type=$(input  "Choose SSH key type: " \
                       "ed25519" \
-                      "ed25519 - recommended NIST\nrsa - legacy rsa-4096" \
+                      "ed25519 - recommended NIST\nrsa - legacy rsa-4096\npassword - Skip key generation (password-based auth)" \
                       "_sshcfg_store_validate_key_type") || return 1
 
     confirm_result=$(input  "Confirm: " \
@@ -54,9 +54,35 @@ _ssh_host_add() {
     echo "Adding configuration ..."
     echo "'${host_alias}' '${hostname}' '${user}' '${port}' '${key_type}'"
 
-    key_file=$(_ssh_host_generate_key "$host_alias" "$key_type")
+    if [[ "$key_type" != "password" ]]; then
+        key_file=$(_ssh_host_generate_key "$host_alias" "$key_type")
+        _ssh_host_add_to_agent "$key_file"
+    fi
+
     _ssh_host_add_to_config "$host_alias" "$hostname" "$user" "$port" "$key_file"
-    _ssh_host_add_to_agent "$key_file"
+
+    _ssh_host_print_add_success "$host_alias" "$key_file"
+}
+
+_ssh_host_print_add_success() {
+    local host_alias="$1" key_file="$2"
+
+    [[ -z "$key_file" ]] && {
+        cat <<EOF
+
+Host '$host_alias' successfully configured!
+
+Next Steps:
+────────────────────────────────────────────────
+1. Test the connection (you will be prompted for password):
+   ssh $host_alias
+
+2. This host is configured for password-based authentication.
+   No SSH key was generated.
+
+EOF
+        return 0
+    }
 
     cat <<EOF
 
