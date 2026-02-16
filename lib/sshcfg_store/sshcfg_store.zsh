@@ -74,11 +74,11 @@ Host $host_alias
     HostName $hostname
     User $user
     Port $port
+    IdentitiesOnly yes
 EOF
 
     [[ -n "$identity_file" ]] && cat >> "$config_file" << EOF
     IdentityFile $identity_file
-    IdentitiesOnly yes
 EOF
     return 0
 }

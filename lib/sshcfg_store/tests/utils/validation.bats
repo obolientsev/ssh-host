@@ -547,43 +547,49 @@ _sshcfg_store_alias_list() {
 }
 
 # bats test_tags=_sshcfg_store_validate_key_type,critical
+@test "_sshcfg_store_validate_key_type: accepts password" {
+    run _sshcfg_store_validate_key_type "password"
+    assert_success
+}
+
+# bats test_tags=_sshcfg_store_validate_key_type,critical
 @test "_sshcfg_store_validate_key_type: rejects dsa" {
     run _sshcfg_store_validate_key_type "dsa"
     assert_failure 1
-    assert_output --partial 'Key type must be either ed25519 or rsa'
+    assert_output --partial 'Key type must be either ed25519, rsa, or password'
 }
 
 # bats test_tags=_sshcfg_store_validate_key_type
 @test "_sshcfg_store_validate_key_type: rejects ecdsa" {
     run _sshcfg_store_validate_key_type "ecdsa"
     assert_failure 1
-    assert_output --partial 'Key type must be either ed25519 or rsa'
+    assert_output --partial 'Key type must be either ed25519, rsa, or password'
 }
 
 # bats test_tags=_sshcfg_store_validate_key_type,critical
 @test "_sshcfg_store_validate_key_type: rejects empty key type" {
     run _sshcfg_store_validate_key_type ""
     assert_failure 1
-    assert_output --partial 'Key type must be either ed25519 or rsa'
+    assert_output --partial 'Key type must be either ed25519, rsa, or password'
 }
 
 # bats test_tags=_sshcfg_store_validate_key_type
 @test "_sshcfg_store_validate_key_type: rejects invalid key type" {
     run _sshcfg_store_validate_key_type "invalid"
     assert_failure 1
-    assert_output --partial 'Key type must be either ed25519 or rsa'
+    assert_output --partial 'Key type must be either ed25519, rsa, or password'
 }
 
 # bats test_tags=_sshcfg_store_validate_key_type
 @test "_sshcfg_store_validate_key_type: rejects uppercase ED25519" {
     run _sshcfg_store_validate_key_type "ED25519"
     assert_failure 1
-    assert_output --partial 'Key type must be either ed25519 or rsa'
+    assert_output --partial 'Key type must be either ed25519, rsa, or password'
 }
 
 # bats test_tags=_sshcfg_store_validate_key_type
 @test "_sshcfg_store_validate_key_type: rejects uppercase RSA" {
     run _sshcfg_store_validate_key_type "RSA"
     assert_failure 1
-    assert_output --partial 'Key type must be either ed25519 or rsa'
+    assert_output --partial 'Key type must be either ed25519, rsa, or password'
 }

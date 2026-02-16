@@ -490,3 +490,34 @@ EOF
     assert_failure
     assert_output --partial "Alias already exists"
 }
+
+# bats test_tags=_sshcfg_store_add,critical
+@test "_sshcfg_store_add: adds host without identity file for password auth" {
+    run _sshcfg_store_add "$TEST_CONFIG" "passserver" "pass.example.com" "passuser" "22" ""
+
+    assert_success
+    assert_file_contains "$TEST_CONFIG" "Host passserver"
+    assert_file_contains "$TEST_CONFIG" "HostName pass.example.com"
+    assert_file_contains "$TEST_CONFIG" "User passuser"
+    assert_file_contains "$TEST_CONFIG" "Port 22"
+    assert_file_contains "$TEST_CONFIG" "IdentitiesOnly yes"
+
+    run grep "IdentityFile" "$TEST_CONFIG"
+    assert_failure
+}
+
+# bats test_tags=_sshcfg_store_add
+@test "_sshcfg_store_add: handles empty identity file parameter" {
+    run _sshcfg_store_add "$TEST_CONFIG" "emptykey" "empty.example.com" "emptyuser" "2222" ""
+
+    assert_success
+    assert_file_contains "$TEST_CONFIG" "Host emptykey"
+    assert_file_contains "$TEST_CONFIG" "HostName empty.example.com"
+    assert_file_contains "$TEST_CONFIG" "User emptyuser"
+    assert_file_contains "$TEST_CONFIG" "Port 2222"
+
+    run grep -A 5 "Host emptykey" "$TEST_CONFIG"
+    assert_success
+    assert_output --partial "IdentitiesOnly yes"
+    refute_output --partial "IdentityFile"
+}

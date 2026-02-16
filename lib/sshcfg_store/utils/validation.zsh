@@ -101,8 +101,8 @@ _sshcfg_store_validate_identity_file() {
 
 _sshcfg_store_validate_key_type() {
     local key_type="$1" exit_code=0
-    [[ "$key_type" == "ed25519" || "$key_type" == "rsa" ]] || \
-        { echo "Key type must be either ed25519 or rsa. not $key_type"; exit_code=1; }
+    [[ "$key_type" == "ed25519" || "$key_type" == "rsa" || "$key_type" == "password" ]] || \
+        { echo "Key type must be either ed25519, rsa, or password. not $key_type"; exit_code=1; }
 
     return "$exit_code"
 }
