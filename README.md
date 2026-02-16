@@ -19,7 +19,7 @@ Zsh plugin to simplify interaction with SSH config, ssh, scp.
 |  |  |
 |---------|------|
 | **Interactive Host Selection**<br>Browse hosts from .ssh/config with fuzzy search and live preview of connection details, port, key, and descriptions. Filter and navigate with keyboard. | ![Host Selection](demo/select.gif) |
-| **Quick Host Setup**<br>Add new hosts through guided setup. Plugin automatically manages SSH config with Include directive, keeping your main config clean. Supports ed25519 and RSA-4096 key generation with SSH agent integration. | ![Add Host](demo/add.gif) |
+| **Quick Host Setup**<br>Add new hosts through guided setup. Plugin automatically manages SSH config with Include directive, keeping your main config clean. Supports ed25519/RSA-4096 key generation with SSH agent integration, or password-based auth. | ![Add Host](demo/add.gif) |
 | **SCP Support**<br>Upload files/directories with `ctrl-u`, download with `ctrl-d`. Auto-detects recursive transfers for directories. | ![SCP Support](demo/scp.gif) |
 | **Pin**<br>Press `ctrl-p` to pin frequently-used hosts to the top of your list. Quick access to servers or most used environments. | ![Pin Host](demo/pin.gif) |
 | **Custom Descriptions**<br>Press `ctrl-e` to add descriptions to hosts. Document server purpose, environment (prod/staging/dev), or notes. | ![Edit Description](demo/edit.gif) |
