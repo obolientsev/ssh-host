@@ -226,6 +226,57 @@ EOF
 }
 
 # bats test_tags=_sshcfg_store_alias_list,critical
+@test "_sshcfg_store_alias_list: show_all_sub_aliases=false returns only first alias per Host block" {
+    cat > "$TEST_CONFIG" << 'EOF'
+Host server1 srv1 s1
+    HostName example.com
+
+Host server2 srv2
+    HostName example2.com
+EOF
+
+    run _sshcfg_store_alias_list "$TEST_CONFIG" "false"
+
+    assert_success
+    assert_line -n 0 "server1"
+    assert_line -n 1 "server2"
+    refute_output --partial "srv1"
+    refute_output --partial "s1"
+    refute_output --partial "srv2"
+}
+
+# bats test_tags=_sshcfg_store_alias_list,critical
+@test "_sshcfg_store_alias_list: show_all_sub_aliases=false skips wildcard and uses first valid alias" {
+    cat > "$TEST_CONFIG" << 'EOF'
+Host * proxmox
+    HostName example.com
+EOF
+
+    run _sshcfg_store_alias_list "$TEST_CONFIG" "false"
+
+    assert_success
+    assert_output "proxmox"
+}
+
+# bats test_tags=_sshcfg_store_alias_list
+@test "_sshcfg_store_alias_list: show_all_sub_aliases=false keeps single-alias hosts unchanged" {
+    cat > "$TEST_CONFIG" << 'EOF'
+Host server1
+    HostName example.com
+
+Host server2 srv2
+    HostName example2.com
+EOF
+
+    run _sshcfg_store_alias_list "$TEST_CONFIG" "false"
+
+    assert_success
+    assert_line -n 0 "server1"
+    assert_line -n 1 "server2"
+    refute_output --partial "srv2"
+}
+
+# bats test_tags=_sshcfg_store_alias_list,critical
 @test "_sshcfg_store_alias_list: follows Include directives" {
     cat > "$INCLUDE_CONFIG" << 'EOF'
 Host included1

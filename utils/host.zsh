@@ -42,7 +42,7 @@ _ssh_host_print_host_config() {
 # _ssh_host_alias_list "/path/to/config"
 _ssh_host_alias_list() {
     local conf_file="${1:-$SSH_HOST_BASE_CONFIG_FILE}"
-    _sshcfg_store_alias_list "$conf_file"
+    _sshcfg_store_alias_list "$conf_file" "${SSH_HOST_SHOW_ALL_SUB_ALIAS:-true}"
 }
 
 # Resolves SSH config for host using native ssh -G command

@@ -2,13 +2,16 @@ SSHCFG_STORE_PLUGIN_DIR="${SSHCFG_STORE_PLUGIN_DIR:-${${(%):-%x}:A:h}}"
 source "${SSHCFG_STORE_PLUGIN_DIR}/utils/validation.zsh"
 source "${SSHCFG_STORE_PLUGIN_DIR}/utils/system.zsh"
 
-# Extracts all host aliases from SSH config with Include support
+# Extracts host aliases from SSH config with Include support
+# show_all_sub_aliases=true (default): each alias gets its own row
+# show_all_sub_aliases=false: only first alias per Host block
 # _sshcfg_store_alias_list
 # => "server_alias_1"
 # => "server_alias_2"
-# _sshcfg_store_alias_list "/path/to/config"
+# _sshcfg_store_alias_list "/path/to/config" "false"
 _sshcfg_store_alias_list() {
     local conf_file="${1:-"$HOME/.ssh/config"}"
+    local show_all_sub_aliases="${2:-true}"
     local aliases=()
     local includes=()
 
@@ -16,8 +19,10 @@ _sshcfg_store_alias_list() {
         case "$type" in
             Host)
                 set -f
-                for alias in $rest; do
-                    [[ "$alias" != "*" && "$alias" != *"?"* ]] && aliases+=("$alias")
+                for alias in $(echo "$rest"); do
+                    [[ "$alias" == "*" || "$alias" == *"?"* ]] && continue
+                    aliases+=("$alias")
+                    [[ "$show_all_sub_aliases" == "false" ]] && break
                 done
                 set +f
                 ;;
@@ -29,7 +34,7 @@ _sshcfg_store_alias_list() {
 
     for inc in "${includes[@]}"; do
       for expanded_path in ${inc/#\~/$HOME}; do
-        [[ -f "$expanded_path" ]] && aliases+=( $(_sshcfg_store_alias_list "$expanded_path") )
+        [[ -f "$expanded_path" ]] && aliases+=( $(_sshcfg_store_alias_list "$expanded_path" "$show_all_sub_aliases") )
       done
     done
     printf "%s\n" "${aliases[@]}"
