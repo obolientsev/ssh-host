@@ -31,6 +31,28 @@ _ssh_host_generate_key() {
     echo "$key_file"
 }
 
+# Checks if a host supports password authentication
+# _ssh_host_supports_password_auth "server1"
+# => returns 0 if password auth is available, 1 otherwise
+_ssh_host_supports_password_auth() {
+    local host_alias="$1"в
+    ssh -v -o BatchMode=yes -o ConnectTimeout=5 "$host_alias" true 2>&1 \
+        | grep -qwE "password|keyboard-interactive"
+}
+
+# Deploys public key to a remote host via ssh-copy-id
+# Skips silently if host does not support password authentication
+# _ssh_host_deploy_key "server1" "/path/to/keys/server1/id_ed25519"
+# => returns 0 on success, 1 on failure or if password auth not supported
+_ssh_host_deploy_key() {
+    local host_alias="$1" key_file="$2"
+
+    [[ -z "$host_alias" || -z "$key_file" ]] && return 1
+    _ssh_host_supports_password_auth "$host_alias" || return 1
+    printf "\nDeploying public key to '%s' ...\n" "$host_alias"
+    ssh-copy-id -i "${key_file}.pub" "$host_alias"
+}
+
 _ssh_host_add_to_agent() {
     local key_file="$1"
 

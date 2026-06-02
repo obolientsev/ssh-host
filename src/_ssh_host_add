@@ -8,7 +8,7 @@ source "${SSH_HOST_PLUGIN_DIR}/utils/fzf.zsh"
 source "${SSH_HOST_PLUGIN_DIR}/utils/key.zsh"
 
 _ssh_host_add() {
-    local host_alias hostname user port key_type key_file
+    local host_alias hostname user port key_type key_file confirm_result
     input() {
         local prompt="$1" placeholder="${2}" options="$3" validator="$4"
         _ssh_host_fzf_input "$validator" \
@@ -52,7 +52,6 @@ _ssh_host_add() {
 
     [[ "$confirm_result" == *"Yes"* ]] || { echo "Configuration cancelled"; return 1; }
     echo "Adding configuration ..."
-    echo "'${host_alias}' '${hostname}' '${user}' '${port}' '${key_type}'"
 
     if [[ "$key_type" != "password" ]]; then
         key_file=$(_ssh_host_generate_key "$host_alias" "$key_type")
@@ -61,19 +60,19 @@ _ssh_host_add() {
 
     _ssh_host_add_to_config "$host_alias" "$hostname" "$user" "$port" "$key_file"
 
-    _ssh_host_print_add_success "$host_alias" "$key_file"
+    local key_deployed=false
+    [[ -n "$key_file" ]] && _ssh_host_deploy_key "$host_alias" "$key_file" && key_deployed=true
+
+    _ssh_host_print_add_success "$host_alias" "$key_file" "$key_deployed"
 }
 
 _ssh_host_print_add_success() {
-    local host_alias="$1" key_file="$2"
+    local host_alias="$1" key_file="$2" key_deployed="${3:-false}"
+
+    printf "\nHost '%s' successfully configured!\n\nNext Steps:\n─────────────────────────────────────\n" "$host_alias"
 
     [[ -z "$key_file" ]] && {
         cat <<EOF
-
-Host '$host_alias' successfully configured!
-
-Next Steps:
-────────────────────────────────────────────────
 1. Test the connection (you will be prompted for password):
    ssh $host_alias
 
@@ -84,22 +83,21 @@ EOF
         return 0
     }
 
+    [[ "$key_deployed" == "true" ]] && {
+        cat <<EOF
+1. Test the connection:
+   ssh $host_alias
+
+EOF
+        return 0
+    }
+
     cat <<EOF
-
-Host '$host_alias' successfully configured!
-
-Next Steps:
-────────────────────────────────────────────────
-1. Deploy your public key to the server manually
-
-Public key content:
+1. Add this public key to your server (or the service):
    $(cat "${key_file}.pub")
 
 2. Test the connection:
    ssh $host_alias
-
-3. Your public key is located at:
-   ${key_file}.pub
 
 EOF
 }
