@@ -14,6 +14,7 @@ zsh plugin that cuts ssh and scp boilerplate
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
 - [Key Bindings](#key-bindings)
+- [Tips](#tips)
 - [Troubleshooting](#troubleshooting)
 
 ## Key Features
