@@ -35,7 +35,7 @@ _ssh_host_generate_key() {
 # _ssh_host_supports_password_auth "server1"
 # => returns 0 if password auth is available, 1 otherwise
 _ssh_host_supports_password_auth() {
-    local host_alias="$1"в
+    local host_alias="$1"
     ssh -v -o BatchMode=yes -o ConnectTimeout=5 "$host_alias" true 2>&1 \
         | grep -qwE "password|keyboard-interactive"
 }
